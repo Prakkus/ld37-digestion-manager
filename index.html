@@ -1,0 +1,831 @@
+<!doctype html>
+<html>
+	<head>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+	<script src="https://unpkg.com/vue/dist/vue.js"></script>		
+	<script src="https://cdn.jsdelivr.net/lodash/4.17.2/lodash.min.js"></script>	
+
+	<style>
+	* {
+		box-sizing: border-box;
+	}
+	html {
+		font-family: sans-serif;
+		background: url('assets/images/stomach.png') no-repeat -100px -350px #fff;
+	}
+	body {
+		margin: 0;
+		padding: 0;
+	}
+
+	#app {
+		padding: 10px;
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+		min-height: 1500px;
+	}
+
+	.dead {
+		background: url('assets/images/stomach-ruptured.png') no-repeat -100px -350px #fff;		
+	}
+	/** Switch
+	 -------------------------------------*/
+
+	 .switch-container {
+	  position: relative;
+	  top: 0; right: 0; bottom: 0; left: 0;
+	  height: 40px;
+	  margin: auto;
+	  text-align: center;
+	}
+
+	.switch input {
+	  position: absolute;
+	  opacity: 0;
+	}
+
+	/**
+	 * 1. Adjust this to size
+	 */
+
+	.switch {
+	  display: inline-block;
+	  font-size: 20px; /* 1 */
+	  height: 1em;
+	  width: 2em;
+	  background: #7D7C73;
+	  border-radius: 1em;
+	}
+
+	.switch div {
+	  height: 1em;
+	  width: 1em;
+	  border-radius: 1em;
+	  background: #FFF;
+	  box-shadow: 0 0.1em 0.3em rgba(0,0,0,0.3);
+	  -webkit-transition: all 300ms;
+	     -moz-transition: all 300ms;
+	          transition: all 300ms;
+	}
+
+	.switch input:checked + div {
+	  -webkit-transform: translate3d(100%, 0, 0);
+	     -moz-transform: translate3d(100%, 0, 0);
+	          transform: translate3d(100%, 0, 0);
+	}
+
+
+
+
+	table {
+		border: 1px solid black;
+		border-radius: 7px;
+		float: left;
+		margin-top: 60px;
+		padding: 10px;
+	}
+
+	td {
+		display: flex;
+		align-items: 	center;
+		font-size: 24px;
+	}
+	.food-card {
+		height: 300px;
+		width: 310px;
+		padding: 15px 5px 5px 5px;
+		position: relative;
+	}
+	.food-image {
+		display: block;
+		margin: 8px auto;
+		max-height: 180px;
+	}
+	.food-name {
+		display: block;
+		text-align: center;
+	}
+	.meal-container {
+		margin-top: 20px;
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		align-content: space-between;
+		position: relative;
+	}
+	.meal-wrapper, .activity-wrapper {
+		margin-top: 20px;
+		float: right;
+		text-align: center;
+		background: rgba(255, 255, 255, .25);
+		width: 650px;
+		padding: 5px;
+		font-size: 24px;
+		border-radius: 7px;
+	}
+	.activity-wrapper i {
+		font-size: 50px;
+		display: block;
+		margin-top: 20px;
+		margin-bottom: 20px;
+	}
+	.toggle-digest-container {
+		padding-top: 10px;
+		padding-bottom: 10px;
+		width: 80%;
+	 	margin: auto;
+		display: flex;
+		align-content: space-between;
+	}
+	.active {
+		color: green;
+	}
+	.center {
+		text-align: center;
+	}
+	.vomit {
+		width: 120px;
+		position: absolute;
+		margin-top: -28px;
+		margin-left: -100px;
+		background: #47ff47;
+		top: 50%;
+		left: 0;
+		z-index: 10;
+	}
+
+	.instructions, .notifications {
+		margin-top: 12px;
+		font-size: 18px;
+		width: 800px;
+	}
+
+	.notifications {
+		font-size: 20px;
+	}
+
+	.progress-bar-container {
+		background: #f6f6f6;
+		position: relative;
+		float: left;
+		margin-right: 25px;
+		width: 300px;
+		height: 30px;
+		outline: 1px solid black;
+	}
+
+	.progress-bar {
+		display: flex;
+		align-items: center;
+		position: absolute;
+		overflow: visible;
+		white-space: nowrap;
+		text-indent: 5px;
+		height: 30px;
+		width: 0px;
+		line-height: 30px;
+		color: #FBFBFF;
+		text-shadow: 1px 1px 5px #000;
+		transition: width 1.5s;
+	}
+
+	.progress-bar i {
+		line-height: 30px;
+		margin-right: 10px;
+	}
+
+	.progress-bar span {
+		line-height: 30px;
+	}
+	select {
+		width: 100%;
+	}
+
+	.indicator-icon {
+		display: inline-block;
+		line-height: 20px;
+		font-size: 18px;
+		padding-right: 10px;
+	}
+
+	.no-padding {
+		padding: 0px;
+	}
+
+	.activity-indicator-icon {
+		display: inline-block;
+		line-height: 24px;
+		font-size: 24px;
+		padding-right: 10px;	
+	}
+
+	.energy-icon {
+		color: #e0e054;
+	}
+	.happiness-icon {
+		color: green;
+	}
+	.health-icon {
+		color: #f36464;
+	}
+
+	button {
+		background: #fafafa;
+		cursor: pointer;
+		font-size: 24px;
+		letter-spacing: 1px;
+		border-radius: 7px;
+		line-height: 50px;
+		border: 2px solid #666;
+		box-shadow: inset 0 -4px 0 0 #666;
+	}
+
+
+	button.process-meal {
+		margin-top: 8px;
+		background: #AA0114;
+		box-shadow: inset 0 -4px 0 0 #7A010F;
+		width: 100%;
+		color: #fff;
+		border: 2px solid #7A010F;
+	}
+
+	button.experience-activity {
+		margin-top: 30px;
+		width: 100%;
+	}
+
+	button:active {
+		box-shadow: none;
+		border-width: 1px;
+	}
+	button:hover {
+		opacity: .8;
+	}
+	.score-board > h1 {
+		font-size: 30px;
+		float: left;
+		margin: 0px 20px 0px 0px;
+	}
+	.score-board {
+		padding: 3px;
+		width: 100%;
+		overflow: hidden;
+	}
+
+	.current-left {
+		float: left;
+	}
+	.current-right {
+		float: right;
+		margin-right: 10%;
+	}
+
+	.start {
+		margin-top: 30px;
+	}
+
+	</style>
+	</head>
+	<body>
+		<div id="app" v-bind:class="{ dead: !game_state.started && game_state.scores.grade != undefined }">
+		<div class="game-end-screen" v-if="!game_state.started && game_state.scores.grade != undefined">
+			<span class="notifications" v-html="this.game_state.scores.final_notification"></span>
+			You lasted {{game_state.scores.total_days}} day(s)! <br>
+			That gives you a grade of <strong>{{game_state.scores.grade}}</strong> 
+		</div>
+		<div class="notifications" v-if="!game_state.started && game_state.scores.grade == undefined"> 
+		Welcome! As stomach lord, you are responsible for dealing with the strange and nonsensical meals that your human eats. <br>Your goal? Keep your human alive as best you can!
+		</div>
+			<button class="start" @click="startGame()" v-if="game_state.started == false">Start Game</button>
+			<div class="game-screen" v-if="game_state.started">
+				<div class="score-board">
+					<h1>Day: {{game_state.day}}</h1>
+					<progress-bar :current_amount="game_state.energy" color="#e0e054" label="Energy: " icon="flash_on"></progress-bar>
+					<progress-bar :current_amount="game_state.happiness" color="green" label="Happiness: " icon="tag_faces"></progress-bar>
+					<progress-bar :current_amount="game_state.health" color="#f36464" label="Digestive Health: " icon="favorite_border"></progress-bar>
+				</div>
+
+					<div class="current" v-if="game_state.current_action != null">
+					<div class="current-left">
+						<div class="notifications" v-html="game_state.notification" class="notification" v-if="game_state.notification != ''">
+						</div>
+						<table>
+							<th>Today's Schedule</th>
+							<tr v-for="activity in game_state.today_schedule">
+							<td><i class='material-icons indicator-icon' :title="getActivityToolTip(activity)">{{ getActivityIconName(activity) }}</i>{{ activity.name }}</td>
+							</tr>
+						</table>
+						</div>
+
+						<div class="current-right">
+							<span class="activity-wrapper" v-if="game_state.current_action.type == 'activity'">
+								<i class='material-icons indicator-icon no-padding' :title="getActivityToolTip(game_state.current_action.action)">{{ getActivityIconName(game_state.current_action.action) }}</i>
+								Taylor is going to {{game_state.current_action.action.description}}!
+							<button class="experience-activity" @click="advanceAction()">Experience Activity!</button>
+							</span>
+
+							<div class="meal-wrapper" v-else>
+								<h5 class="center">{{getRandomMealDescriptor()}} meal! Taylor just ate:</h5>
+								<div class="meal-container">
+									<button class="vomit" @click="vomit()" v-if="game_state.current_action.type == 'meal'">Vomit!</button>
+									<div class="food-card" v-for="(food, index) in game_state.current_action.action">
+										<img class="food-image" :src="food.image_path">
+										<span class="food-name">
+											<strong>{{food.name}}</strong>
+										</span>
+										<div class="toggle-digest-container">
+											<span>"Pass" it</span>
+												<div class="switch-container">
+												  <label class="switch"><input type="checkbox" value="0" @change="toggleDigestFood(index, $event)" />   <div></div>
+												  </label>
+												</div>
+											<span>Digest it</span>
+										</div>
+								</div>
+							</div>
+							<button class="process-meal" @click="advanceAction()">Process Meal!</button>
+						</div>
+					</div>
+			</div>
+
+		</div>
+
+<script>
+// Forces signing on a number, returned as a string
+function numberWithPlus(number){
+    if(number >= 0){
+        return "+" + number;
+    }else{
+        return number.toString();
+    }
+}
+function rollPercent(percentDecimal) {
+	var maximum = 1;
+	var minimum = 100;
+	var roll = Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
+
+	console.log('roll ' +roll, 'percentDecimal ' + percentDecimal * 100);
+	if (roll <= percentDecimal * 100) {
+		return true;
+	}
+	return false;
+}
+var progressBar = Vue.extend({
+	props: ['current_amount', 'color', 'label', 'icon'],
+	template: `<div class='stats'>
+					<div class='progress-bar-container'>
+						<div class='progress-bar' :style="{width: (current_amount * 3) + 'px', background: color}">
+							<i class="material-icons">{{icon}}</i> <span>{{label}} {{current_amount}} / 100</span>
+						</div>
+					</div>
+				</div>`,
+
+});
+
+
+var app = new Vue({
+  el: '#app',
+  components: {'progress-bar': progressBar},
+  data: function() {
+  	var vm = this;
+  	return {
+	    game_state: {
+	    	eatCurrentMeal: function() {
+	    		var foods = this.current_action.action;
+	    		var totals = {
+	    			energy: 0,
+	    			happiness: 0,
+	    			health: 0
+	    		}
+	    		for (var i = foods.length - 1; i >= 0; i--) {
+	    			if (foods[i].digest == true) {
+	    				console.log('digesting' + foods[i].name);
+		    			this.energy += foods[i].energy;
+		    			totals.energy += foods[i].energy;
+
+		    			this.happiness += foods[i].happiness;
+		    			totals.happiness += foods[i].happiness;
+
+		    			this.health += foods[i].health;
+		    			totals.health += foods[i].health;
+
+	    			} else {
+	    				var energyChange = Math.floor(foods[i].energy * .25);
+	    				var happinessChange = Math.floor(foods[i].happiness * .25);
+	    				var healthChange = Math.floor(foods[i].health * .25);
+
+		    			this.energy += energyChange;
+		    			totals.energy += energyChange;
+
+		    			this.happiness += happinessChange;
+		    			totals.happiness += happinessChange;
+
+		    			this.health += healthChange;
+		    			totals.health += healthChange;
+	    			}
+	    		}
+	    		this.notification = numberWithPlus(totals.energy) + "<i class='material-icons energy-icon indicator-icon'>flash_on</i>" + numberWithPlus(totals.happiness) + "<i class='material-icons happiness-icon indicator-icon'>tag_faces</i>" + numberWithPlus(totals.health) + "<i class='material-icons health-icon indicator-icon'>favorite_border</i>" + "Taylor feels different after their meal.";
+	    		this.current_action = {type: null};
+	    	},
+	    	doCurrentActivity: function() {
+	    		var activity = this.current_action.action;
+
+	    		var events = vm.calculateHealthEvents();
+	    		console.log(events);
+	    		// var eventModifiers = {energy: 0, happiness: 0, health: 0};
+	    		var happeningEvents = [];
+	    		_.forEach(events, function(occurred, eventName) {
+	    			if (occurred) {
+	    				var baseEvent = _.find(vm.possible_events, ['name', eventName]);
+	    				happeningEvents.push(baseEvent);
+	    			}
+	    		});
+	    		if (happeningEvents.length > 0) {
+	    			_.forEach(happeningEvents, function(event) {
+	    				console.log(activity.type)
+	    				var weighting = vm.activity_event_weights[activity.type];
+	    				var energyChange = Math.floor(event.effects.energy * weighting);
+	    				var happinessChange = Math.floor(event.effects.happiness * weighting);
+	    				var healthChange = Math.floor(event.effects.health * weighting);
+	    				vm.game_state.energy += energyChange;
+	    				vm.game_state.happiness += happinessChange;
+	    				vm.game_state.health += healthChange;
+	    				vm.game_state.notification += numberWithPlus(energyChange) + "<i class='material-icons energy-icon indicator-icon'>flash_on</i>" + numberWithPlus(happinessChange) + "<i class='material-icons happiness-icon indicator-icon'>tag_faces</i> " + numberWithPlus(healthChange) + "<i class='material-icons health-icon indicator-icon'>favorite_border</i>" + "Ugh! Taylor " + event.description + " while they were " + activity.gerund_description + ". " + vm.getEmbarrassmentText(activity) + "<br><br>"; 
+	    			});
+	    		}
+
+    			this.energy += activity.energy;
+    			this.happiness += activity.happiness;
+    			this.health += activity.health;
+	    		this.notification += numberWithPlus(activity.energy) + "<i class='material-icons energy-icon indicator-icon'>flash_on</i>" + numberWithPlus(activity.happiness) + "<i class='material-icons happiness-icon indicator-icon'>tag_faces</i>" + numberWithPlus(activity.health) + "<i class='material-icons health-icon indicator-icon'>favorite_border</i>" + activity.name + " complete!<br>";
+
+	    	},
+	    	started: false,
+	    	day: 1,
+	    	current_action: null,
+	    	total_days: 1,
+	    	today_meals: [],
+	    	today_schedule: [],
+	    	last_action: null,
+	    	energy: 85,
+	    	happiness: 85,
+	    	health: 100,
+	    	notification: '',
+	    	scores: {}
+	    },
+	    activity_event_weights: {
+	    	chore: .6,
+	    	exercise: .85,
+	    	family: .7,
+	    	social: 1
+	    },
+	    //this is a method to get around objects being passed by reference
+	    possible_foods: function() { return [{"name":"beef","type":"meat","happiness":15,"energy":30,"health":-5,"image_path":"assets/images/beef.png"},
+{"name":"chicken","type":"meat","happiness":20,"energy":35,"health":10,"image_path":"assets/images/chicken.png"},
+{"name":"beans","type":"meat","happiness":10,"energy":40,"health":-20,"image_path":"assets/images/beans.png"},
+{"name":"broccoli","type":"vegetable","happiness":-10,"energy":15,"health":25,"image_path":"assets/images/broccoli.png"},
+{"name":"tomato","type":"vegetable","happiness":-30,"energy":5,"health":35,"image_path":"assets/images/tomato.png"},
+{"name":"carrots","type":"vegetable","happiness":-20,"energy":10,"health":30,"image_path":"assets/images/carrots.png"},
+{"name":"juice","type":"drink","happiness":10,"energy":5,"health":15,"image_path":"assets/images/juice.png"},
+{"name":"soda","type":"drink","happiness":45,"energy":20,"health":-30,"image_path":"assets/images/soda.png"},
+{"name":"beer","type":"drink","happiness":60,"energy":-15,"health":-50,"image_path":"assets/images/beer.png"}]},
+	    possible_activities: [{"name":"take the dog for a walk","description":"take the dog for a walk","gerund_description":"","happiness":-10,"energy":-25,"health":30,"type":"exercise"},
+{"name":"house party","description":"a friend's house party","gerund_description":"partying at a friend's","happiness":60,"energy":-45,"health":-15,"type":"social"},
+{"name":"stay in","description":"stay in and chill","gerund_description":"chilling at home","happiness":-25,"energy":-10,"health":10,"type":"family"},
+{"name":"soccer at the park","description":"play soccer at the park","gerund_description":"playing soccer","happiness":40,"energy":-55,"health":40,"type":"exercise"},
+{"name":"movie with friends","description":"a movie with some friends","gerund_description":"at the theatre","happiness":30,"energy":-20,"health":0,"type":"social"},
+{"name":"dentist checkup","description":"go to the dentist for a checkup","gerund_description":"the dentist was working","happiness":-60,"energy":-15,"health":25,"type":"family"},
+{"name":"amusement park","description":"the amusement park","gerund_description":"riding a roller coaster","happiness":60,"energy":-45,"health":-30,"type":"social"},
+{"name":"go to beach","description":"the beach","gerund_description":"at the beach","happiness":40,"energy":-40,"health":10,"type":"social"},
+{"name":"rock concert","description":"a rock concert","gerund_description":"moshing at the concert","happiness":45,"energy":-50,"health":-10,"type":"social"},
+{"name":"shopping at the mall","description":"do some shopping at the mall","gerund_description":"shopping at the mall","happiness":30,"energy":-30,"health":5,"type":"social"},
+{"name":"summer book report","description":"work on their summer book report","gerund_description":"doing the book report","happiness":-40,"energy":-15,"health":0,"type":"chore"},
+{"name":"volunteer work","description":"do volunteer work at the pet shelter","gerund_description":"volunteering at the shelter","happiness":-35,"energy":-25,"health":0,"type":"chore"},
+{"name":"visit Grandma","description":"a family gathering at grandma's","gerund_description":"saying grace","happiness":-20,"energy":-20,"health":20,"type":"family"},
+{"name":"yard work","description":"help dad with yard work","gerund_description":"doing the yard work","happiness":-35,"energy":-45,"health":15,"type":"chore"},
+{"name":"skate park","description":"the skate park","gerund_description":"going down the ramp","happiness":35,"energy":-45,"health":10,"type":"exercise"},
+{"name":"little sister's birthday party","description":"attend their little sister's birthday party","gerund_description":"at little sister's birthday party","happiness":-20,"energy":-30,"health":5,"type":"family"}],
+		possible_events:
+  			[
+  			{
+  				name: 'flatulence',
+  				description: 'experienced some flatulence',
+  				effects: {
+  					happiness: -20,
+  					energy: 0,
+  					health: -5
+  				},
+  				chances: {
+  					90: .25,
+  					75: .4,
+  					60: .6,
+  					50: .75,
+  					30: 1,
+  					15: 1,
+  					5: 1,
+  				}
+			},
+  			{
+  				name: 'upset_stomach',
+   				description: 'got an upset stomach',
+ 				effects: {
+  					happiness: -25,
+  					energy: -10,
+  					health: -10
+  				},
+  				chances: {
+  					90: .05,
+  					75: .15,
+  					60: .2,
+  					50: .4,
+  					30: .5,
+  					15: 1,
+  					5: 1,
+  				}
+			},
+			{
+				name: 'frequent_bathroom_breaks',
+  				description: 'had to take frequent bathroom breaks',
+				effects: {
+					happiness: -10,
+					energy: -20,
+					health: 5
+				},
+				chances: {
+  					90: 0,
+  					75: .08,
+  					60: .15,
+  					50: .25,
+  					30: .4,
+  					15: .55,
+  					5: 1,
+				}
+			},
+			{
+				name: 'leave_early',
+  				description: 'had to leave early',
+				effects: {
+					happiness: -30,
+					energy: -10,
+					health: 20
+				},
+				chances: {
+  					90: 0,
+  					75: 0,
+  					60: .03,
+  					50: .1,
+  					30: .2,
+  					15: .3,
+  					5: 1,
+				}
+			}
+			]
+	}
+  },
+  watch: {
+  	'game_state.energy': function(value) {
+  		if (value > 100) this.game_state.energy = 100;
+  		if (value <= 0) {
+  			this.game_state.energy = 0;
+  			this.endGame();
+  		}
+  	},
+    'game_state.happiness': function(value) {
+  		if (value > 100) this.game_state.happiness = 100;
+  		if (value <= 0) {
+  			this.game_state.happiness = 0;
+  			this.endGame();
+  		};
+  	},
+  	 'game_state.health': function(value) {
+  		if (value > 100) this.game_state.health = 100;
+  		if (value < 0) this.game_state.health = 0;
+  	}
+  },
+  methods: {
+  	startGame: function() {
+  		this.generateDay();
+  		this.game_state.started = true;
+  		this.advanceAction();
+  	},
+  	endGame: function() {
+  		this.game_state.scores.grade = this.getGameGrade();
+  		this.game_state.scores.total_days = this.game_state.total_days;
+  		this.game_state.scores.final_notification = this.game_state.notification;
+  		this.resetGame();
+  	},
+  	resetGame: function() {
+  		this.game_state.started = false;
+  		this.game_state.energy = 85;
+  		this.game_state.happiness = 85;
+  		this.game_state.health = 100;
+  		this.game_state.notification = '';
+  		this.game_state.current_action = null;
+  		this.game_state.last_action = null;
+  		this.game_state.total_days = 1;
+  		this.game_state.day = 1;
+  	},
+  	resetCheckboxes: function() {
+		var inputs = document.getElementsByTagName('input');
+		console.log(inputs);
+		for(var i = 0; i<inputs.length; i++){
+
+		  if(inputs[i].getAttribute('type') === 'checkbox'){
+		  	console.log('unchecking' + inputs[i]);
+		    inputs[i].checked = false;
+		  }
+		}
+  	},
+  	advanceAction: function() {
+  		var vm = this;
+  		if (this.game_state.last_action != null && this.game_state.current_action.type == 'meal' && this.game_state.last_action == 'meal') {
+			this.game_state.notification = '';
+  			console.log('consuming meal!');
+			this.game_state.eatCurrentMeal();
+  		}
+  		if (this.game_state.last_action != null && this.game_state.current_action.type == 'activity' && this.game_state.last_action == 'activity') {
+			this.game_state.notification = '';
+  			console.log('doing activity!!');
+  			this.game_state.doCurrentActivity();
+  		}
+  		if (this.game_state.last_action == null || this.game_state.last_action == 'activity' && this.game_state.today_meals.length > 0) {
+  			var meal = this.game_state.today_meals.shift();
+  			//set defaults to not digest
+  			meal.map(function(item) {
+  				item.digest = false;
+  			});
+
+  			this.game_state.current_action = {type: 'meal', action: meal};
+  			this.game_state.last_action = 'meal';
+  			Vue.nextTick(function(){
+  				vm.resetCheckboxes();  				
+  			});
+  		} else if (this.game_state.today_schedule.length > 0) {
+  			var activity = this.game_state.today_schedule.shift();
+  			this.game_state.current_action = {type: 'activity', action: activity};
+  			this.game_state.last_action = 'activity';
+  		} else {
+  			this.advanceDay();
+  		}
+  	},
+  	advanceDay() {
+  		this.game_state.day++;
+  		this.game_state.total_days++;
+  		this.game_state.current_action = null;
+  		this.game_state.last_action = null;
+  		this.generateDay();
+  		this.advanceAction();
+  	},
+  	generateDay: function() {
+  		var numberOfMeals = _.random(3, 4);
+  		var meals = [];
+  		for (var i = numberOfMeals; i > 0; i--) {
+  			meals.push(this.generateMeal());
+  		}
+
+  		this.game_state.today_meals = meals;
+  		this.game_state.today_schedule = this.generateSchedule();
+  	},
+  	generateMeal: function() {
+  		var numberOfItems = _.random(3, 4);
+  		var meal = [];
+  		for (var i = numberOfItems; i > 0; i--) {
+  			var selected = _.sample(this.possible_foods());
+  			// if (_.find(this.game_state.current_meal, selected)) {
+  				//it's a duplicated, add one to the counter instead of adding it again
+  				// i++;
+  			// } else {
+  				meal.push(selected);
+  			// }
+  		}
+  		return meal;
+  	},
+  	generateSchedule: function() {
+  		var numberOfActivities = _.random(3, 4);
+  		var schedule = [];
+  		for (var i = numberOfActivities; i > 0; i--) {
+  			var selected = _.sample(this.possible_activities);
+  			// if (_.find(this.game_state.day_schedule, selected)) {
+  			// 	//it's a duplicated, add one to the counter instead of adding it again
+  			// 	i++;
+  			// } else {
+  				schedule.push(selected);
+  			// }
+  		}
+  		return schedule;
+  	},
+	toggleDigestFood : function(index, event) {
+		console.log('toggling ' + index );
+		var value = event.target.checked;
+		if (value == true) {
+			 this.game_state.current_action.action[index].digest = true;
+		} else {
+			 this.game_state.current_action.action[index].digest = false;			
+		}
+	},
+	vomit: function() {
+  			this.game_state.energy += -35;
+  			this.game_state.happiness += -35; 
+  			this.game_state.health = 100;
+  			//remove the current and next meal
+  			var thing = this.game_state.today_meals.shift();
+  			//var thing = this.game_state.today_meals.shift();
+  			// var thing = this.game_state.today_meals.shift();
+  			this.game_state.last_action = 'meal';
+  			this.game_state.current_action = {type: null};
+  			this.game_state.notification = "You threw up (at the cost of 35 energy and happiness)! You'll also have to skip your next meal. At least your gut health is back up to 100!";
+  			this.advanceAction();
+  	},
+  	calculateHealthEvents: function() {
+  			var vm = this;
+  			var selectedChances = {};
+  			_.forEach(vm.possible_events, function(event) {
+				_.forEach(event.chances, function(value, key){
+					if (vm.game_state.health <= key && selectedChances[event.name] == undefined) {
+						selectedChances[event.name] = value;
+					}
+				});
+  			});
+  			var results = {};
+  			console.log(selectedChances);
+  			_.forEach(selectedChances, function(value, key) {
+  				results[key] = rollPercent(value);
+  			});
+  			return results;
+  		},
+	getGameGrade: function() {
+		var total = this.game_state.total_days;
+		if (total < 3) {
+			return "D";
+		}
+		if (total < 6) {
+			return "C";
+		}
+		if (total < 9) {
+			return "B"
+		}
+		if (total < 12) {
+			return "A"
+		}
+		if (total > 15) {
+			return "S"
+		}
+	},
+	getActivityIconName: function(activity) {
+		var icons = {
+			chore: 'assignment',
+			exercise: 'directions_bike', //directions_bike? directions_run? fitness_center?
+			family: 'home', //child_friendly?
+			social: 'group',
+		}
+		return icons[activity.type];
+	},
+	getActivityToolTip: function(activity) {
+		var toolTips = {
+			chore: 'Chore: Chores cost energy and make Taylor unhappy.',
+			exercise: 'Exercise: Exercises cost energy but improve digestive health.', //directions_bike? directions_run? fitness_center?
+			family: 'Family: Family activities make Taylor unhappy but improve digestive health.',
+			social: 'Social: Social activities make Taylor very happy but cost energy and lower digestive health.',
+		}
+		return toolTips[activity.type];
+	},
+	getRandomMealDescriptor: function () {
+		var descriptors = [
+		    'appetizing',
+		    'delectable',
+		    'delightful',
+		    'enticing',
+		    'exquisite',
+		    'tasty',
+		    'mouthwatering',
+		    'exceptional',
+		    'tasteful',
+		    'titillating'
+		];
+		var randomOne = _.random(0, descriptors.length -1);
+		var selected = descriptors[randomOne];
+		//see if it starts with a vowel
+		var pattern = /^([aeiou])/i;
+		var needsAn = pattern.test(selected);
+		var a = 'A';
+		if (needsAn) a += 'n';
+		return a + ' ' + selected;
+
+	},
+	getEmbarrassmentText: function(activity) {
+		var levels = {
+			social: "Super embarrassing!",
+			exercise: "Very embarrassing!",
+			family: "Kinda embarrassing.",
+			chore: "Slightly embarrassing."
+		}
+		return levels[activity.type];
+	}
+  }
+});
+</script>
+	</body>
+</html>
