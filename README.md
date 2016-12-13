@@ -26,6 +26,8 @@ NOTE: Plays best on Chrome v55 in full screen on a 1920x1080p monitor.
 
 Made in 72-hours for the Ludum Dare Jam 37 by Logan Stolmaker and Davide Spiert and Mark Pressler (Death graphic only)
 
+Ludum dare page: http://ludumdare.com/compo/ludum-dare-37/?action=preview&uid=125070
+
 Tools:
 
 Vue.js
